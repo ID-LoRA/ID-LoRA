@@ -256,11 +256,15 @@ A MOS study evaluating physically grounded audio-visual correspondence across 10
 ## Citation
 
 ```bibtex
-@article{idlora2026,
-  title={ID-LoRA: Identity-Preserving Audio-Video Generation},
-  author={TODO},
-  journal={arXiv preprint arXiv:TODO},
-  year={2026}
+@misc{dahan2026idloraidentitydrivenaudiovideopersonalization,
+  title     = {ID-LoRA: Identity-Driven Audio-Video Personalization
+               with In-Context LoRA},
+  author    = {Aviad Dahan and Moran Yanuka and Noa Kraicer and Lior Wolf and Raja Giryes},
+  year      = {2026},
+  eprint    = {2603.10256},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.SD},
+  url       = {https://arxiv.org/abs/2603.10256}
 }
 ```
 
