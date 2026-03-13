@@ -23,6 +23,82 @@ Given a **text prompt, reference image, and short audio clip**, it generates a t
 
 Built on **LTX-2** with **In-Context LoRA** for identity conditioning.
 
+## Examples
+
+All videos contain **both speech and environment sounds** generated jointly by ID-LoRA. Click to play (audio included).
+
+### Generated examples
+
+<table>
+<tr>
+  <th>Reference Audio</th>
+  <th>Generated Video</th>
+</tr>
+<tr>
+  <td align="center">
+    <a href="assets/1158/reference.mp3">🔊 Listen</a>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/gallery/1158/jackhammer.mp4" width="320"></video>
+  </td>
+</tr>
+<tr>
+  <td align="center">
+    <a href="assets/5335/reference.mp3">🔊 Listen</a>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/gallery/5335/guitar.mp4" width="320"></video>
+  </td>
+</tr>
+</table>
+
+### Comparison with baselines
+
+Same speaker, same scene — comparing ID-LoRA against cascaded baselines and Kling 2.6 Pro. All methods receive the same reference audio and visual conditioning. Click each video to play with audio.
+
+<table>
+<tr>
+  <th>Reference (voice source)</th>
+  <th>Ground Truth</th>
+</tr>
+<tr>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/reference.mp4" width="256"></video>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/target.mp4" width="256"></video>
+  </td>
+</tr>
+</table>
+
+<table>
+<tr>
+  <th><b>ID-LoRA (Ours) ⭐</b></th>
+  <th>Kling 2.6 Pro</th>
+  <th>CosyVoice 3.0 + WAN2.2</th>
+  <th>ElevenLabs + WAN2.2</th>
+  <th>VoiceCraft + WAN2.2</th>
+</tr>
+<tr>
+  <td align="center" style="border: 3px solid #4493f8;">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/ours.mp4" width="180"></video>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/kling.mp4" width="180"></video>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/cosyvoice.mp4" width="180"></video>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/elevenlabs_wan.mp4" width="180"></video>
+  </td>
+  <td align="center">
+    <video src="https://github.com/ID-LoRA/id-lora.github.io/raw/main/videos/comparisons/speaker_844_pair3/voicecraft.mp4" width="180"></video>
+  </td>
+</tr>
+</table>
+
+> For more examples and playable audio-video results, visit the [project page](https://id-lora.github.io).
 
 ## Overview
 
@@ -50,7 +126,7 @@ Key features:
 ### Setup
 
 ```bash
-git clone https://github.com/YOUR_ORG/ID-LoRA.git
+git clone https://github.com/ID-LoRA/ID-LoRA.git
 cd ID-LoRA
 
 # Install all dependencies (frozen lockfile for reproducibility)
