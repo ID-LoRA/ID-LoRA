@@ -10,7 +10,7 @@
   <img src="assets/teaser.png" alt="ID-LoRA teaser" width="720">
 </p>
 
-## TL;DR
+## ⚡ TL;DR
 
 **ID-LoRA** enables identity-preserving **audio–video generation in a single model**.  
 Given a **text prompt, reference image, and short audio clip**, it generates a talking video where the **voice sounds like the reference speaker and the face matches the subject**.
@@ -24,30 +24,39 @@ Given a **text prompt, reference image, and short audio clip**, it generates a t
 Built on **LTX-2** with **In-Context LoRA** for identity conditioning.
 
 
-## Overview
+## 🔍 Overview
 
 **ID-LoRA** (Identity-Driven In-Context LoRA) jointly generates a subject's appearance and voice in a single model, letting a text prompt, a reference image, and a short audio clip govern both modalities together. Built on top of [LTX-2](https://github.com/Lightricks/LTX-Video), it is the first method to personalize visual appearance and voice within a single generative pass.
 
 Unlike cascaded pipelines that treat audio and video separately, ID-LoRA operates in a unified latent space where a single text prompt can simultaneously dictate the scene's visual content, environmental acoustics, and speaking style -- while preserving the subject's vocal identity and visual likeness.
 
 Key features:
-- **Unified audio-video generation** -- voice and appearance synthesized jointly, not cascaded
-- **Audio identity transfer** -- the generated speaker sounds like the reference
-- **Prompt-driven environment control** -- text prompts govern speaking style, environment sounds, and scene content
-- **First-frame conditioning** -- provide an image to control the face and scene
-- **Zero-shot at inference** -- just load the LoRA weights, no per-speaker fine-tuning needed
-- **Two-stage pipeline** -- high-quality output with 2x spatial upsampling
-- **Lightweight** -- trained with only ~3K pairs on a single GPU
+- 🎵 **Unified audio-video generation** -- voice and appearance synthesized jointly, not cascaded
+- 🗣️ **Audio identity transfer** -- the generated speaker sounds like the reference
+- 🌍 **Prompt-driven environment control** -- text prompts govern speaking style, environment sounds, and scene content
+- 🖼️ **First-frame conditioning** -- provide an image to control the face and scene
+- ⚡ **Zero-shot at inference** -- just load the LoRA weights, no per-speaker fine-tuning needed
+- 🔬 **Two-stage pipeline** -- high-quality output with 2x spatial upsampling
+- 🪶 **Lightweight** -- trained with only ~3K pairs on a single GPU
 
-## Installation
+## 🗺️ Roadmap
 
-### Prerequisites
+- [x] Pre-trained checkpoints (CelebV-HQ, TalkVid)
+- [x] Inference scripts (one-stage, two-stage)
+- [x] Training code
+- [ ] Training datasets (CelebV-HQ preprocessed, TalkVid preprocessed) -- HuggingFace Datasets
+- [ ] Evaluation datasets and benchmark splits (CelebV-HQ v3.2 eval, TalkVid eval) -- HuggingFace Datasets
+- [ ] Evaluation scripts
+
+## 🛠️ Installation
+
+### 📋 Prerequisites
 
 - Python 3.10+
 - CUDA 12.x with 24+ GB VRAM (48 GB recommended for two-stage)
 - [uv](https://docs.astral.sh/uv/) package manager
 
-### Setup
+### ⚙️ Setup
 
 ```bash
 git clone https://github.com/ID-LoRA/ID-LoRA.git
@@ -57,7 +66,7 @@ cd ID-LoRA
 uv sync --frozen
 ```
 
-### Download Models
+### 📥 Download Models
 
 ID-LoRA requires the base LTX-2 model and supporting components:
 
@@ -88,9 +97,9 @@ huggingface-cli download AviadDahan/ID-LoRA-TalkVid \
   lora_weights.safetensors --local-dir models/id-lora-talkvid
 ```
 
-## Inference
+## 🚀 Inference
 
-### Two-Stage (Recommended -- Higher Quality)
+### 🎯 Two-Stage (Recommended -- Higher Quality)
 
 The two-stage pipeline generates at the target resolution, then spatially upsamples 2x with a distilled LoRA for sharper output.
 
@@ -105,7 +114,7 @@ python scripts/inference_two_stage.py \
 
 Stage 1 generates at `512x512` (configurable via `--height`/`--width`), stage 2 refines at `1024x1024`.
 
-### One-Stage (Fast / Low VRAM)
+### ⚡ One-Stage (Fast / Low VRAM)
 
 Single-resolution generation without upsampling. Faster and uses less VRAM.
 
@@ -118,7 +127,7 @@ python scripts/inference_one_stage.py \
   --output-dir outputs/
 ```
 
-### Key Arguments
+### 🔧 Key Arguments
 
 | Argument | Default | Description |
 |----------|---------|-------------|
@@ -134,7 +143,7 @@ python scripts/inference_one_stage.py \
 | `--identity-guidance-scale` | 3.0 | Identity guidance strength |
 | `--seed` | 42 | Random seed |
 
-### Batch Inference
+### 📦 Batch Inference
 
 Create a JSON file with multiple samples:
 
@@ -162,9 +171,24 @@ python scripts/inference_two_stage.py \
   --output-dir outputs/
 ```
 
-## Training
+### 🎬 Pre-generated Examples
 
-### Dataset Preparation
+The [`examples/`](examples/) directory contains pre-generated outputs you can inspect before running inference yourself:
+
+| | First Frame | Output |
+|---|---|---|
+| **Two-stage** | <img src="examples/first_frame.png" width="180"> | [`examples/two_stage/output_0000.mp4`](examples/two_stage/output_0000.mp4) |
+| **One-stage** | <img src="examples/first_frame.png" width="180"> | [`examples/one_stage/output_0000.mp4`](examples/one_stage/output_0000.mp4) |
+
+Both were generated with `--quantize` enabled (int8), seed 42, and the prompt:
+
+> *"We are proud to introduce ID-LoRA."*
+
+Full generation configs are in [`examples/two_stage/args.json`](examples/two_stage/args.json) and [`examples/one_stage/args.json`](examples/one_stage/args.json).
+
+## 🏋️ Training
+
+### 📂 Dataset Preparation
 
 ID-LoRA training requires preprocessed video-audio pairs with:
 - Video latents (encoded with LTX-2 VAE)
@@ -175,7 +199,7 @@ ID-LoRA training requires preprocessed video-audio pairs with:
 
 See `packages/ltx-trainer/` for the preprocessing pipeline.
 
-### Run Training
+### 🏃 Run Training
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python packages/ltx-trainer/scripts/train.py \
@@ -188,14 +212,14 @@ Example configs are in `configs/`:
 
 Both use the `audio_ref_only_ic` strategy with negative temporal positions, LoRA rank 128, and 6000 training steps.
 
-## Pre-trained Checkpoints
+## 📦 Pre-trained Checkpoints
 
 | Checkpoint | Dataset | LoRA Rank | Training Steps | Download |
 |-----------|---------|-----------|----------------|----------|
-| ID-LoRA-CelebVHQ | CelebV-HQ | 128 | 6,000 | [HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-CelebVHQ) |
-| ID-LoRA-TalkVid | TalkVid | 128 | 6,000 | [HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-TalkVid) |
+| ID-LoRA-CelebVHQ | CelebV-HQ | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-CelebVHQ) |
+| ID-LoRA-TalkVid | TalkVid | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-TalkVid) |
 
-## Method
+## 🧪 Method
 
 <p align="center">
   <img src="assets/architecture.png" alt="ID-LoRA architecture" width="800">
@@ -213,9 +237,9 @@ ID-LoRA adapts the LTX-2 joint audio-video diffusion backbone (19B parameter DiT
 
 The LoRA adapter (rank 128) targets audio self-attention, audio-video cross-attention, and audio FFN layers, learning identity transfer from ~3K training pairs on a single GPU in 6,000 steps.
 
-## Results
+## 📊 Results
 
-### Comparison with Baselines
+### 📈 Comparison with Baselines
 
 ID-LoRA outperforms cascaded baselines (CosyVoice 3.0 + WAN2.2, VoiceCraft + WAN2.2, ElevenLabs + WAN2.2) and the state-of-the-art commercial Kling 2.6 Pro on speaker similarity and lip synchronization. The advantage widens on the harder cross-video split where reference and target conditions diverge.
 
@@ -238,7 +262,7 @@ ID-LoRA outperforms cascaded baselines (CosyVoice 3.0 + WAN2.2, VoiceCraft + WAN
 | **ID-LoRA (Ours)** | **0.599** | 0.772 | 10.62 | 3.09 | 0.385 | 0.054 |
 | **ID-LoRA (CelebV-HQ → TalkVid)** | 0.595 | 0.767 | **10.32** | **3.12** | **0.412** | 0.065 |
 
-### Human Evaluation
+### 👥 Human Evaluation
 
 In A/B preference studies on Amazon Mechanical Turk (9 annotators per item, ~285-290 annotations per question), ID-LoRA is significantly preferred over both Kling 2.6 Pro and ElevenLabs + WAN2.2 across all axes (p < 0.001):
 
@@ -250,7 +274,7 @@ In A/B preference studies on Amazon Mechanical Turk (9 annotators per item, ~285
 
 **vs. ElevenLabs + WAN2.2:** voice similarity 81% vs 18%, environment sounds 69% vs 26%, speech manners 55% vs 40%.
 
-### Environment Sound Interaction
+### 🔊 Environment Sound Interaction
 
 A MOS study evaluating physically grounded audio-visual correspondence across 10 interaction scenarios (dropping a box, clapping, drumming, etc.) shows ID-LoRA achieves higher overall MOS than Kling 2.6 Pro (3.05 vs 2.90), winning on 8 of 10 scenarios:
 
@@ -258,16 +282,7 @@ A MOS study evaluating physically grounded audio-visual correspondence across 10
   <img src="assets/mos_study.png" alt="Environment sound MOS study" width="700">
 </p>
 
-## Roadmap
-
-- [x] Pre-trained checkpoints (CelebV-HQ, TalkVid)
-- [x] Inference scripts (one-stage, two-stage)
-- [x] Training code
-- [ ] Training datasets (CelebV-HQ preprocessed, TalkVid preprocessed) -- HuggingFace Datasets
-- [ ] Evaluation datasets and benchmark splits (CelebV-HQ v3.2 eval, TalkVid eval) -- HuggingFace Datasets
-- [ ] Evaluation scripts
-
-## Citation
+## 📝 Citation
 
 ```bibtex
 @misc{dahan2026idloraidentitydrivenaudiovideopersonalization,
@@ -282,11 +297,11 @@ A MOS study evaluating physically grounded audio-visual correspondence across 10
 }
 ```
 
-## License
+## ⚖️ License
 
 This project is licensed under the terms of the [LICENSE](LICENSE) file.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - Built on [LTX-2](https://github.com/Lightricks/LTX-Video) by Lightricks
 - Text encoder: [Gemma 3](https://ai.google.dev/gemma) by Google
