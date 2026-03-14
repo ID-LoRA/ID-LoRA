@@ -82,10 +82,10 @@ huggingface-cli download Lightricks/LTX-Video \
 
 # ID-LoRA checkpoint (pick one or both)
 huggingface-cli download AviadDahan/ID-LoRA-CelebVHQ \
-  lora_weights.safetensors --local-dir models
+  lora_weights.safetensors --local-dir models/id-lora-celebvhq
 # or
 huggingface-cli download AviadDahan/ID-LoRA-TalkVid \
-  lora_weights.safetensors --local-dir models
+  lora_weights.safetensors --local-dir models/id-lora-talkvid
 ```
 
 ## Inference
@@ -96,7 +96,7 @@ The two-stage pipeline generates at the target resolution, then spatially upsamp
 
 ```bash
 python scripts/inference_two_stage.py \
-  --lora-path models/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --reference-audio reference_speaker.wav \
   --first-frame first_frame.png \
   --prompt "[VISUAL]: A person speaks in a sunlit park... [SPEECH]: Hello world... [SOUNDS]: ..." \
@@ -111,7 +111,7 @@ Single-resolution generation without upsampling. Faster and uses less VRAM.
 
 ```bash
 python scripts/inference_one_stage.py \
-  --lora-path models/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --reference-audio reference_speaker.wav \
   --first-frame first_frame.png \
   --prompt "[VISUAL]: A person speaks in a sunlit park... [SPEECH]: Hello world... [SOUNDS]: ..." \
@@ -157,7 +157,7 @@ Create a JSON file with multiple samples:
 
 ```bash
 python scripts/inference_two_stage.py \
-  --lora-path models/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --prompts-file prompts.json \
   --output-dir outputs/
 ```
