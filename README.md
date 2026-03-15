@@ -88,6 +88,8 @@ This downloads to `models/` by default. To use a custom directory: `bash scripts
 
 ## 🚀 Inference
 
+> **📢 Reference audio should be ~5 seconds long.** The model was trained on 5-second reference clips, so providing a reference audio of approximately this duration yields optimal speaker similarity. Shorter or longer clips may degrade voice identity transfer.
+
 ### 🎯 Two-Stage (Recommended -- Higher Quality)
 
 The two-stage pipeline generates at the target resolution, then spatially upsamples 2x with a distilled LoRA for sharper output.
@@ -121,7 +123,7 @@ python scripts/inference_one_stage.py \
 | Argument | Default | Description |
 |----------|---------|-------------|
 | `--lora-path` | required | Path to ID-LoRA `.safetensors` checkpoint |
-| `--reference-audio` | required | Reference audio file (`.wav`) for speaker identity |
+| `--reference-audio` | required | Reference audio file (`.wav`, ~5 s) for speaker identity |
 | `--first-frame` | required | First-frame image for face/scene conditioning |
 | `--prompt` | required | Text prompt (or use `--prompts-file` for batch) |
 | `--height` / `--width` | 512 / 512 | Generation resolution (must be divisible by 32) |
