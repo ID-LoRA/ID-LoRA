@@ -44,6 +44,8 @@ Key features:
 - [x] Pre-trained checkpoints (CelebV-HQ, TalkVid)
 - [x] Inference scripts (one-stage, two-stage)
 - [x] Training code
+- [ ] ComfyUI support
+- [ ] LTX-2.3 support
 - [ ] Training datasets (CelebV-HQ preprocessed, TalkVid preprocessed) -- HuggingFace Datasets
 - [ ] Evaluation datasets and benchmark splits (CelebV-HQ v3.2 eval, TalkVid eval) -- HuggingFace Datasets
 - [ ] Evaluation scripts
