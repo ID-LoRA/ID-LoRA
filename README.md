@@ -117,7 +117,7 @@ ID-LoRA uses a structured prompt with three tagged sections:
 ```
 
 **Tips:**
-- Be descriptive in `[VISUAL]` — shot type, colors, clothing, and background details all help.
+- Be descriptive in `[VISUAL]` — shot type, colors, clothing, and background details all help, mention that the person is speaking to avoid voice-overs.
 - `[SPEECH]` should contain the exact transcript, not a summary.
 - `[SOUNDS]` controls both the speaking style (tone, volume, mic proximity) and ambient sounds (music, nature, room noise). Describing these steers the audio generation.
 
