@@ -104,7 +104,7 @@ ID-LoRA uses a structured prompt with three tagged sections:
 
 | Section | What to write | Example |
 |---------|--------------|---------|
-| `[VISUAL]` | Shot type, subject appearance, clothing, setting, lighting, actions | *A medium shot of a woman with short black hair wearing a white blouse, standing in a modern kitchen with warm lighting.* |
+| `[VISUAL]` | Shot type, subject appearance, clothing, setting, lighting, actions | *A medium shot of a woman with short black hair wearing a white blouse, standing in a modern kitchen with warm lighting and speaking calmly.* |
 | `[SPEECH]` | The literal words to be spoken | *Hello everyone, welcome to our channel.* |
 | `[SOUNDS]` | Speaker vocal qualities (volume, tone, distance from mic) and background sounds | *The speaker has a calm, conversational tone at moderate volume, close to the microphone. Soft birds chirping in the background.* |
 
