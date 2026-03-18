@@ -1,0 +1,329 @@
+# =============================================================================
+# LTX-2 Video-to-Video (IC-LoRA) Training Configuration
+# =============================================================================
+#
+# This configuration is for training In-Context LoRA (IC-LoRA) adapters that
+# enable video-to-video transformations. IC-LoRA learns to apply visual
+# transformations (e.g., depth-to-video, pose control, style transfer, etc.)
+# by conditioning on reference videos.
+#
+# Key differences from text-to-video LoRA:
+#   - Uses reference videos as conditioning input alongside text prompts
+#   - Requires preprocessed reference latents in addition to target latents
+#   - Validation requires reference videos to demonstrate the transformation
+#
+# Dataset structure for IC-LoRA training:
+#   preprocessed_data_root/
+#   ├── latents/           # Target video latents (what the model learns to generate)
+#   ├── conditions/        # Text embeddings for each video
+#   └── reference_latents/ # Reference video latents (conditioning input)
+#
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Model Configuration
+# -----------------------------------------------------------------------------
+# Specifies the base model to fine-tune and the training mode.
+model:
+  # Path to the LTX-2 model checkpoint (.safetensors file)
+  # This should be a local path to your downloaded model
+  model_path: "path/to/ltx-2-model.safetensors"
+
+  # Path to the text encoder model directory
+  # For LTX-2, this is typically the Gemma-based text encoder
+  text_encoder_path: "path/to/gemma-text-encoder"
+
+  # Training mode: "lora" for efficient adapter training, "full" for full fine-tuning
+  # Note: video_to_video strategy requires "lora" mode
+  training_mode: "lora"
+
+  # Optional: Path to resume training from a checkpoint
+  # Can be a checkpoint file (.safetensors) or directory (uses latest checkpoint)
+  load_checkpoint: null
+
+# -----------------------------------------------------------------------------
+# LoRA Configuration
+# -----------------------------------------------------------------------------
+# Controls the Low-Rank Adaptation parameters for efficient fine-tuning.
+lora:
+  # Rank of the LoRA matrices (higher = more capacity but more parameters)
+  # Typical values: 8, 16, 32, 64. Start with 16-32 for IC-LoRA.
+  rank: 32
+
+  # Alpha scaling factor (usually set equal to rank)
+  # The effective scaling is alpha/rank, so alpha=rank means scaling of 1.0
+  alpha: 32
+
+  # Dropout probability for LoRA layers (0.0 = no dropout)
+  # Can help with regularization if overfitting occurs
+  dropout: 0.0
+
+  # Which transformer modules to apply LoRA to
+  # The LTX-2 transformer has separate attention and FFN blocks for video and audio:
+  #
+  # VIDEO MODULES:
+  #   - attn1.to_k, attn1.to_q, attn1.to_v, attn1.to_out.0  (video self-attention)
+  #   - attn2.to_k, attn2.to_q, attn2.to_v, attn2.to_out.0  (video cross-attention to text)
+  #   - ff.net.0.proj, ff.net.2                             (video feed-forward)
+  #
+  # AUDIO MODULES (not used for video-only IC-LoRA):
+  #   - audio_attn1.to_k, audio_attn1.to_q, audio_attn1.to_v, audio_attn1.to_out.0  (audio self-attention)
+  #   - audio_attn2.to_k, audio_attn2.to_q, audio_attn2.to_v, audio_attn2.to_out.0  (audio cross-attention to text)
+  #   - audio_ff.net.0.proj, audio_ff.net.2                                         (audio feed-forward)
+  #
+  # AUDIO-VIDEO CROSS-ATTENTION MODULES (for cross-modal interaction, not used for video-only IC-LoRA):
+  #   - audio_to_video_attn.to_k, audio_to_video_attn.to_q, audio_to_video_attn.to_v, audio_to_video_attn.to_out.0
+  #       (Q from video, K/V from audio - allows video to attend to audio features)
+  #   - video_to_audio_attn.to_k, video_to_audio_attn.to_q, video_to_audio_attn.to_v, video_to_audio_attn.to_out.0
+  #       (Q from audio, K/V from video - allows audio to attend to video features)
+  #
+  # For IC-LoRA (video-only), we explicitly target video modules.
+  # Including FFN layers often improves transformation quality.
+  target_modules:
+    # Video self-attention
+    - "attn1.to_k"
+    - "attn1.to_q"
+    - "attn1.to_v"
+    - "attn1.to_out.0"
+    # Video cross-attention
+    - "attn2.to_k"
+    - "attn2.to_q"
+    - "attn2.to_v"
+    - "attn2.to_out.0"
+    # Video feed-forward (often improves transformation quality)
+    - "ff.net.0.proj"
+    - "ff.net.2"
+
+# -----------------------------------------------------------------------------
+# Training Strategy Configuration
+# -----------------------------------------------------------------------------
+# Defines the video-to-video (IC-LoRA) training approach.
+training_strategy:
+  # Strategy name: "video_to_video" for IC-LoRA training
+  name: "video_to_video"
+
+  # Probability of conditioning on the first frame during training
+  # Higher values train the model to perform better in image-to-video (I2V) mode,
+  # where a clean first frame is provided and the model generates the rest of the video
+  # Increase this value to train the model to perform better in image-to-video (I2V) mode
+  first_frame_conditioning_p: 0.2
+
+  # Directory name (within preprocessed_data_root) containing reference video latents
+  # These are the conditioning inputs that guide the transformation
+  reference_latents_dir: "reference_latents"
+
+# -----------------------------------------------------------------------------
+# Optimization Configuration
+# -----------------------------------------------------------------------------
+# Controls the training optimization parameters.
+optimization:
+  # Learning rate for the optimizer
+  # Typical range for LoRA: 1e-5 to 1e-4
+  learning_rate: 2e-4
+
+  # Total number of training steps
+  steps: 3000
+
+  # Batch size per GPU
+  # Reduce if running out of memory
+  batch_size: 1
+
+  # Number of gradient accumulation steps
+  # Effective batch size = batch_size * gradient_accumulation_steps * num_gpus
+  gradient_accumulation_steps: 1
+
+  # Maximum gradient norm for clipping (helps training stability)
+  max_grad_norm: 1.0
+
+  # Optimizer type: "adamw" (standard) or "adamw8bit" (memory-efficient)
+  optimizer_type: "adamw"
+
+  # Learning rate scheduler type
+  # Options: "constant", "linear", "cosine", "cosine_with_restarts", "polynomial"
+  scheduler_type: "linear"
+
+  # Additional scheduler parameters (depends on scheduler_type)
+  scheduler_params: { }
+
+  # Enable gradient checkpointing to reduce memory usage
+  # Recommended for training with limited GPU memory
+  enable_gradient_checkpointing: true
+
+# -----------------------------------------------------------------------------
+# Acceleration Configuration
+# -----------------------------------------------------------------------------
+# Hardware acceleration and memory optimization settings.
+acceleration:
+  # Mixed precision training mode
+  # Options: "no" (fp32), "fp16" (half precision), "bf16" (bfloat16, recommended)
+  mixed_precision_mode: "bf16"
+
+  # Model quantization for reduced memory usage
+  # Options: null (none), "int8-quanto", "int4-quanto", "int2-quanto", "fp8-quanto", "fp8uz-quanto"
+  quantization: null
+
+  # Load text encoder in 8-bit precision to save memory
+  # Useful when GPU memory is limited
+  load_text_encoder_in_8bit: false
+
+# -----------------------------------------------------------------------------
+# Data Configuration
+# -----------------------------------------------------------------------------
+# Specifies the training data location and loading parameters.
+data:
+  # Root directory containing preprocessed training data
+  # Should contain: latents/, conditions/, and reference_latents/ subdirectories
+  preprocessed_data_root: "/path/to/preprocessed/data"
+
+  # Number of worker processes for data loading
+  # Used for parallel data loading to speed up data loading
+  num_dataloader_workers: 2
+
+# -----------------------------------------------------------------------------
+# Validation Configuration
+# -----------------------------------------------------------------------------
+# Controls validation video generation during training.
+# NOTE: Validation sampling use simplified inference pipelines and prioritizes speed over
+# maximum quality. For production-quality inference, use `packages/ltx-pipelines`.
+validation:
+  # Text prompts for validation video generation
+  # Provide prompts representative of your training data
+  # LTX-2 prefers longer, detailed prompts that describe both visual content and audio
+  prompts:
+    - "A man in a casual blue jacket walks along a winding path through a lush green park on a bright sunny afternoon. Tall oak trees line the pathway, their leaves rustling gently in the breeze. Dappled sunlight creates shifting patterns on the ground as he strolls at a relaxed pace, occasionally looking up at the scenery around him. The audio captures footsteps on gravel, birds singing in the trees, distant children playing, and the soft whisper of wind through the foliage."
+    - "A fluffy orange tabby cat sits perfectly still on a wooden windowsill, its green eyes intently tracking small birds hopping on a branch just outside the glass. The cat's ears twitch and rotate, following every movement. Warm afternoon light illuminates its fur, creating a soft golden glow. Behind the cat, a cozy living room with a bookshelf and houseplants is visible. The audio features gentle purring, occasional soft meows, muffled bird chirps through the window, and quiet ambient room sounds."
+
+  # Reference videos for validation (REQUIRED for video_to_video strategy)
+  # Must provide one reference video per prompt
+  # These are the conditioning inputs for generating validation outputs
+  reference_videos:
+    - "/path/to/reference_video_1.mp4"
+    - "/path/to/reference_video_2.mp4"
+
+  # Downscale factor for reference videos (for efficient IC-LoRA training)
+  # When > 1, reference videos are processed at 1/n resolution
+  # Must match the --reference-downscale-factor used during dataset preprocessing
+  # Examples: 1 = same resolution, 2 = half resolution (384x384 ref for 768x768 target)
+  reference_downscale_factor: 1
+
+  # Negative prompt to avoid unwanted artifacts
+  negative_prompt: "worst quality, inconsistent motion, blurry, jittery, distorted"
+
+  # Optional: First frame images for additional conditioning
+  # If provided, must have one image per prompt
+  images: null
+
+  # Output video dimensions [width, height, frames]
+  # Width and height must be divisible by 32
+  # Frames must satisfy: frames % 8 == 1 (e.g., 1, 9, 17, 25, 33, 41, 49, 57, 65, 73, 81, 89, ...)
+  video_dims: [ 512, 512, 81 ]
+
+  # Frame rate for generated videos
+  frame_rate: 25.0
+
+  # Random seed for reproducible validation outputs
+  seed: 42
+
+  # Number of denoising steps for validation inference
+  # Higher values = better quality but slower generation
+  inference_steps: 30
+
+  # Generate validation videos every N training steps
+  # Set to null to disable validation during training
+  interval: 100
+
+  # Number of videos to generate per prompt
+  videos_per_prompt: 1
+
+  # Classifier-free guidance scale
+  # Higher values = stronger adherence to prompt but may introduce artifacts
+  guidance_scale: 4.0
+
+  # STG (Spatio-Temporal Guidance) parameters for improved video quality
+  # STG is combined with CFG for better temporal coherence
+  stg_scale: 1.0  # Recommended: 1.0 (0.0 disables STG)
+  stg_blocks: [29]  # Recommended: single block 29
+  stg_mode: "stg_v"  # "stg_v" for video-only (no audio training)
+
+  # Whether to generate audio in validation samples
+  # Can be enabled even when not training the audio branch
+  generate_audio: false
+
+  # Skip validation at the beginning of training (step 0)
+  skip_initial_validation: false
+
+  # Concatenate reference video side-by-side with generated output
+  # Useful for visually comparing the transformation quality
+  include_reference_in_output: true
+
+# -----------------------------------------------------------------------------
+# Checkpoint Configuration
+# -----------------------------------------------------------------------------
+# Controls model checkpoint saving during training.
+checkpoints:
+  # Save a checkpoint every N steps
+  # Set to null to disable intermediate checkpoints
+  interval: 250
+
+  # Number of most recent checkpoints to keep
+  # Set to -1 to keep all checkpoints
+  keep_last_n: 3
+
+  # Precision to use when saving checkpoint weights
+  # Options: "bfloat16" (default, smaller files) or "float32" (full precision)
+  precision: "bfloat16"
+
+# -----------------------------------------------------------------------------
+# Flow Matching Configuration
+# -----------------------------------------------------------------------------
+# Parameters for the flow matching training objective.
+flow_matching:
+  # Timestep sampling mode
+  # "shifted_logit_normal" is recommended for LTX-2 models
+  timestep_sampling_mode: "shifted_logit_normal"
+
+  # Additional parameters for timestep sampling
+  timestep_sampling_params: { }
+
+# -----------------------------------------------------------------------------
+# Hugging Face Hub Configuration
+# -----------------------------------------------------------------------------
+# Settings for uploading trained models to the Hugging Face Hub.
+hub:
+  # Whether to push the trained model to the Hub
+  push_to_hub: false
+
+  # Repository ID on Hugging Face Hub (e.g., "username/my-ic-lora-model")
+  # Required if push_to_hub is true
+  hub_model_id: null
+
+# -----------------------------------------------------------------------------
+# Weights & Biases Configuration
+# -----------------------------------------------------------------------------
+# Settings for experiment tracking with W&B.
+wandb:
+  # Enable W&B logging
+  enabled: false
+
+  # W&B project name
+  project: "ltx-2-trainer"
+
+  # W&B username or team (null uses default account)
+  entity: null
+
+  # Tags to help organize runs
+  tags: [ "ltx2", "ic-lora", "video-to-video" ]
+
+  # Log validation videos to W&B
+  log_validation_videos: true
+
+# -----------------------------------------------------------------------------
+# General Configuration
+# -----------------------------------------------------------------------------
+# Global settings for the training run.
+
+# Random seed for reproducibility
+seed: 42
+
+# Directory to save outputs (checkpoints, validation videos, logs)
+output_dir: "outputs/ltx2_v2v_ic_lora"

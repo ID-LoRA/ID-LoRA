@@ -1,0 +1,124 @@
+# ID-LoRA Training Config -- CelebV-HQ Dataset (LTX-2.3)
+#
+# Strategy: audio_ref_only_ic with negative temporal positions
+# LoRA rank: 128, audio attention + cross-modal attention + audio FFN
+#
+# Usage:
+#   python ID-LoRA-2.3/packages/ltx-trainer/scripts/train.py ID-LoRA-2.3/configs/training_celebvhq.yaml
+
+acceleration:
+  load_text_encoder_in_8bit: false
+  mixed_precision_mode: bf16
+  quantization: null
+
+checkpoints:
+  interval: 200
+  keep_last_n: 2
+  precision: bfloat16
+
+data:
+  num_dataloader_workers: 2
+  preprocessed_data_root: datasets/celebvhq_preprocessed  # Path to preprocessed dataset
+
+flow_matching:
+  timestep_sampling_mode: shifted_logit_normal
+  timestep_sampling_params: {}
+
+hub:
+  hub_model_id: null
+  push_to_hub: false
+
+lora:
+  alpha: 128
+  dropout: 0.0
+  rank: 128
+  target_modules:
+    - audio_attn1.to_k
+    - audio_attn1.to_q
+    - audio_attn1.to_v
+    - audio_attn1.to_out.0
+    - audio_attn2.to_k
+    - audio_attn2.to_q
+    - audio_attn2.to_v
+    - audio_attn2.to_out.0
+    - audio_ff.net.0.proj
+    - audio_ff.net.2
+    - audio_to_video_attn.to_k
+    - audio_to_video_attn.to_q
+    - audio_to_video_attn.to_v
+    - audio_to_video_attn.to_out.0
+    - video_to_audio_attn.to_k
+    - video_to_audio_attn.to_q
+    - video_to_audio_attn.to_v
+    - video_to_audio_attn.to_out.0
+
+model:
+  load_checkpoint: null
+  model_path: models/ltx-2.3-22b-dev.safetensors
+  text_encoder_path: models/gemma-3-12b-it-qat-q4_0-unquantized
+  training_mode: lora
+
+optimization:
+  batch_size: 4
+  enable_gradient_checkpointing: true
+  gradient_accumulation_steps: 1
+  learning_rate: 0.0002
+  max_grad_norm: 1.0
+  optimizer_type: adamw8bit
+  scheduler_params: {}
+  scheduler_type: linear
+  steps: 6000
+
+output_dir: outputs/training/celebvhq_id_lora
+seed: 42
+
+training_strategy:
+  audio_latents_dir: audio_latents
+  first_frame_conditioning_p: 0.9
+  mask_cross_attention_to_reference: true
+  mask_reference_from_text_attention: true
+  name: audio_ref_only_ic
+  reference_audio_latents_dir: reference_audio_latents
+  use_negative_ref_positions: true
+
+validation:
+  compute_metrics: true
+  face_metric: arcface
+  speaker_metric: wavlm_ecapa
+  frame_rate: 25.0
+  generate_audio: true
+  guidance_scale: 4.0
+  include_reference_in_output: true
+  inference_steps: 30
+  interval: 200
+  mask_cross_attention_to_reference: false
+  mask_ref_audio_to_text: false
+  negative_prompt: worst quality, inconsistent motion, blurry, jittery, distorted
+  seed: 42
+  skip_initial_validation: false
+  stg_blocks: [29]
+  stg_mode: stg_av
+  stg_scale: 1.0
+  video_dims: !!python/tuple
+    - 512
+    - 512
+    - 121
+  videos_per_prompt: 1
+  # Populate these with your validation data:
+  prompts: []
+  images: []
+  reference_videos: []
+  target_videos: []
+  captions: []
+
+wandb:
+  enabled: true
+  entity: null
+  log_validation_videos: true
+  project: id-lora
+  tags:
+    - ltx2.3
+    - audio-ref-only-ic
+    - r128
+    - celebvhq
+    - negative_pos

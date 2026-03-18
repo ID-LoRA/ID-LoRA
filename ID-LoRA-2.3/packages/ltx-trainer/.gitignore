@@ -1,0 +1,7 @@
+configs/*.yaml
+!configs/ltx2_av_lora.yaml
+!configs/ltx2_av_lora_low_vram.yaml
+!configs/ltx2_v2v_ic_lora.yaml
+datasets
+outputs
+wandb

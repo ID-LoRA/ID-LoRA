@@ -1,0 +1,23 @@
+{
+  "lora_path": "models/lora_weights.safetensors",
+  "reference_audio": "examples/reference.wav",
+  "first_frame": "examples/first_frame.png",
+  "prompt": "[VISUAL]: A medium shot features a young man with medium-length, curly brown hair and light blue eyes, sitting on a beige or light brown couch. He is wearing a light blue button-up shirt and a red and white patterned tie. His mouth is slightly open as he speaks or reacts. In the background, there is a blurry room setting with warm lighting.\n[SPEECH]: We are proud to introduce ID-LoRA.\n[SOUNDS]: The speaker has a moderate volume and a conversational tone, sounding engaged and natural. They are close to the microphone. Light, instrumental background music plays softly, creating a calm atmosphere.",
+  "prompts_file": null,
+  "checkpoint": "models/ltx-2.3-22b-dev.safetensors",
+  "text_encoder_path": "models/gemma-3-12b-it-qat-q4_0-unquantized",
+  "upsampler_path": "models/ltx-2.3-spatial-upscaler-x2-1.1.safetensors",
+  "distilled_lora_path": "models/ltx-2.3-22b-distilled-lora-384.safetensors",
+  "output_dir": "examples/two_stage",
+  "seed": 42,
+  "height": 512,
+  "width": 512,
+  "num_frames": 121,
+  "num_inference_steps": 30,
+  "quantize": true,
+  "video_guidance_scale": 3.0,
+  "audio_guidance_scale": 7.0,
+  "identity_guidance_scale": 3.0,
+  "stg_scale": 1.0,
+  "negative_prompt": "blurry, out of focus, overexposed, underexposed, low contrast, washed out colors, excessive noise, grainy texture, poor lighting, flickering, motion blur, distorted proportions, unnatural skin tones, deformed facial features, asymmetrical face, missing facial features, extra limbs, disfigured hands, wrong hand count, artifacts around text, inconsistent perspective, camera shake, incorrect depth of field, background too sharp, background clutter, distracting reflections, harsh shadows, inconsistent lighting direction, color banding, cartoonish rendering, 3D CGI look, unrealistic materials, uncanny valley effect, incorrect ethnicity, wrong gender, exaggerated expressions, wrong gaze direction, mismatched lip sync, silent or muted audio, distorted voice, robotic voice, echo, background noise, off-sync audio, incorrect dialogue, added dialogue, repetitive speech, jittery movement, awkward pauses, incorrect timing, unnatural transitions, inconsistent framing, tilted camera, flat lighting, inconsistent tone, cinematic oversaturation, stylized filters, or AI artifacts."
+}
