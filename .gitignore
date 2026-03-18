@@ -54,7 +54,7 @@ outputs/
 # Git submodules / external repos
 submodules/
 external/
-
+models/
 # Secrets
 .env
 

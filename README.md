@@ -323,6 +323,6 @@ This project is licensed under the terms of the [LICENSE](LICENSE) file.
 
 ## 🙏 Acknowledgments
 
-- Built on [LTX-2](https://github.com/Lightricks/LTX-Video) by Lightricks
+- Built on [LTX-2](https://github.com/Lightricks/LTX-2) by Lightricks
 - Text encoder: [Gemma 3](https://ai.google.dev/gemma) by Google
 - Speaker verification: [WavLM](https://github.com/microsoft/unilm/tree/master/wavlm) + ECAPA-TDNN

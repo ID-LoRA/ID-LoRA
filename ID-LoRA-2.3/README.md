@@ -40,7 +40,7 @@ members = ["ID-LoRA-2.3/packages/*"]
 Then sync:
 
 ```bash
-uv sync --frozen
+uv sync
 ```
 
 ## Download Models
@@ -57,8 +57,8 @@ This downloads:
 | `gemma-3-12b-it-qat-q4_0-unquantized` | ~6 GB | Text encoder |
 | `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | ~700 MB | Spatial upscaler (two-stage) |
 | `ltx-2.3-22b-distilled-lora-384.safetensors` | ~900 MB | Distilled LoRA (two-stage) |
-| `id-lora-celebvhq/lora_weights.safetensors` | ~1.1 GB | ID-LoRA CelebVHQ checkpoint (LTX-2.3) |
-| `id-lora-talkvid/lora_weights.safetensors` | ~1.1 GB | ID-LoRA TalkVid checkpoint (LTX-2.3) |
+| `id-lora-celebvhq-ltx2.3/lora_weights.safetensors` | ~1.1 GB | ID-LoRA CelebVHQ checkpoint (LTX-2.3) |
+| `id-lora-talkvid-ltx2.3/lora_weights.safetensors` | ~1.1 GB | ID-LoRA TalkVid checkpoint (LTX-2.3) |
 
 ## Inference
 
@@ -71,7 +71,7 @@ Generates at 512x512 then upscales to 1024x1024 with a distilled LoRA refinement
 
 ```bash
 python ID-LoRA-2.3/scripts/inference_two_stage.py \
-  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
   --reference-audio examples/reference.wav \
   --first-frame examples/first_frame.png \
   --prompt "[VISUAL]: A close-up of a person speaking. [SPEECH]: Hello world. [SOUNDS]: Clear speech." \
@@ -86,7 +86,7 @@ vs 30) but produces higher fidelity results.
 
 ```bash
 python ID-LoRA-2.3/scripts/inference_two_stage_hq.py \
-  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
   --reference-audio examples/reference.wav \
   --first-frame examples/first_frame.png \
   --prompt "[VISUAL]: A close-up of a person speaking. [SPEECH]: Hello world. [SOUNDS]: Clear speech." \
@@ -100,7 +100,7 @@ Generates at a single resolution without upscaling.
 
 ```bash
 python ID-LoRA-2.3/scripts/inference_one_stage.py \
-  --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
   --reference-audio examples/reference.wav \
   --first-frame examples/first_frame.png \
   --prompt "[VISUAL]: A close-up of a person speaking. [SPEECH]: Hello world. [SOUNDS]: Clear speech." \
@@ -116,10 +116,20 @@ with a list of prompt objects instead of individual `--prompt` / `--reference-au
 
 ### Using Example Args
 
+The `ID-LoRA-2.3/examples/` directory contains sample `args.json` files for reference. Use
+explicit CLI arguments (the scripts do not support `@file` syntax):
+
 ```bash
-python ID-LoRA-2.3/scripts/inference_one_stage.py @ID-LoRA-2.3/examples/one_stage/args.json
-python ID-LoRA-2.3/scripts/inference_two_stage.py @ID-LoRA-2.3/examples/two_stage/args.json
+python ID-LoRA-2.3/scripts/inference_one_stage.py \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
+  --reference-audio examples/reference.wav \
+  --first-frame examples/first_frame.png \
+  --prompt "[VISUAL]: A close-up of a person speaking. [SPEECH]: Hello world. [SOUNDS]: Clear speech." \
+  --output-dir outputs/one_stage \
+  --quantize
 ```
+
+Or for two-stage, use `inference_two_stage.py` with the same arguments plus `--output-dir outputs/two_stage`.
 
 ## Training
 
