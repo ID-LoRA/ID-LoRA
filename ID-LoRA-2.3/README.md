@@ -57,8 +57,8 @@ This downloads:
 | `gemma-3-12b-it-qat-q4_0-unquantized` | ~6 GB | Text encoder |
 | `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | ~700 MB | Spatial upscaler (two-stage) |
 | `ltx-2.3-22b-distilled-lora-384.safetensors` | ~900 MB | Distilled LoRA (two-stage) |
-| `id-lora-celebvhq/lora_weights.safetensors` | ~600 MB | ID-LoRA CelebVHQ checkpoint |
-| `id-lora-talkvid/lora_weights.safetensors` | ~600 MB | ID-LoRA TalkVid checkpoint |
+| `id-lora-celebvhq/lora_weights.safetensors` | ~1.1 GB | ID-LoRA CelebVHQ checkpoint (LTX-2.3) |
+| `id-lora-talkvid/lora_weights.safetensors` | ~1.1 GB | ID-LoRA TalkVid checkpoint (LTX-2.3) |
 
 ## Inference
 

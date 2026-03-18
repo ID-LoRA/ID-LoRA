@@ -20,11 +20,11 @@ echo "==> Downloading distilled LoRA (for two-stage pipeline)..."
 hf download Lightricks/LTX-2 \
   ltx-2.3-22b-distilled-lora-384.safetensors --local-dir "$MODEL_DIR"
 
-echo "==> Downloading ID-LoRA checkpoints..."
-hf download AviadDahan/ID-LoRA-CelebVHQ \
+echo "==> Downloading ID-LoRA checkpoints (LTX-2.3)..."
+hf download AviadDahan/LTX-2.3-ID-LoRA-CelebVHQ-3K \
   lora_weights.safetensors --local-dir "$MODEL_DIR/id-lora-celebvhq"
 
-hf download AviadDahan/ID-LoRA-TalkVid \
+hf download AviadDahan/LTX-2.3-ID-LoRA-TalkVid-3K \
   lora_weights.safetensors --local-dir "$MODEL_DIR/id-lora-talkvid"
 
 echo "==> All models downloaded to $MODEL_DIR/"
