@@ -738,8 +738,9 @@ def parse_args() -> argparse.Namespace:
                         help="Distilled LoRA strength for stage 2")
 
     parser.add_argument("--negative-prompt", default=DEFAULT_NEGATIVE_PROMPT)
-    parser.add_argument("--auto-resolution", action="store_true",
-                        help="Auto-detect resolution from first frame aspect ratio")
+    parser.add_argument("--auto-resolution", "--no-auto-resolution", dest="auto_resolution",
+                        action=argparse.BooleanOptionalAction, default=True,
+                        help="Auto-detect resolution from first frame aspect ratio (default: True)")
 
     return parser.parse_args()
 

@@ -562,6 +562,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--stg-scale", type=float, default=1.0, help="STG scale (0 disables)")
 
     parser.add_argument("--negative-prompt", default=DEFAULT_NEGATIVE_PROMPT)
+    parser.add_argument("--auto-resolution", "--no-auto-resolution", dest="auto_resolution",
+                        action=argparse.BooleanOptionalAction, default=True,
+                        help="Auto-detect resolution from first frame aspect ratio (default: True)")
 
     return parser.parse_args()
 
@@ -574,6 +577,13 @@ def main() -> None:
     if not args.prompts_file and not (args.reference_audio and args.first_frame and args.prompt):
         print("Error: provide either --prompts-file or all of --reference-audio, --first-frame, --prompt")
         sys.exit(1)
+
+    if args.auto_resolution and args.first_frame:
+        from PIL import Image
+        _img = Image.open(args.first_frame)
+        _src_w, _src_h = _img.size
+        args.height, args.width = compute_resolution_match_aspect(_src_h, _src_w)
+        print(f"Auto-resolution: {_src_w}x{_src_h} -> {args.width}x{args.height}")
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
