@@ -21,7 +21,7 @@ Given a **text prompt, reference image, and short audio clip**, it generates a t
 - ⚡ **Zero-shot inference** — load LoRA weights, no per-speaker training
 - 🪶 **Lightweight** — trained on ~3K pairs on a single GPU
 
-Built on **LTX-2** with **In-Context LoRA** for identity conditioning.
+Built on **LTX-2** (and now **LTX-2.3**) with **In-Context LoRA** for identity conditioning.
 
 
 ## 🔍 Overview
@@ -44,8 +44,8 @@ Key features:
 - [x] Pre-trained checkpoints (CelebV-HQ, TalkVid)
 - [x] Inference scripts (one-stage, two-stage)
 - [x] Training code
+- [x] LTX-2.3 support (22B model, two-stage HQ inference, BigVGAN v2 vocoder)
 - [ ] ComfyUI support
-- [ ] LTX-2.3 support
 - [ ] Training datasets (CelebV-HQ preprocessed, TalkVid preprocessed) -- HuggingFace Datasets
 - [ ] Evaluation datasets and benchmark splits (CelebV-HQ v3.2 eval, TalkVid eval) -- HuggingFace Datasets
 - [ ] Evaluation scripts
@@ -126,7 +126,7 @@ ID-LoRA uses a structured prompt with three tagged sections:
 The two-stage pipeline generates at the target resolution, then spatially upsamples 2x with a distilled LoRA for sharper output.
 
 ```bash
-python scripts/inference_two_stage.py \
+uv run python scripts/inference_two_stage.py \
   --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --reference-audio reference_speaker.wav \
   --first-frame first_frame.png \
@@ -141,7 +141,7 @@ Stage 1 generates at `512x512` (configurable via `--height`/`--width`), stage 2 
 Single-resolution generation without upsampling. Faster and uses less VRAM.
 
 ```bash
-python scripts/inference_one_stage.py \
+uv run python scripts/inference_one_stage.py \
   --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --reference-audio reference_speaker.wav \
   --first-frame first_frame.png \
@@ -187,7 +187,7 @@ Create a JSON file with multiple samples:
 ```
 
 ```bash
-python scripts/inference_two_stage.py \
+uv run python scripts/inference_two_stage.py \
   --lora-path models/id-lora-celebvhq/lora_weights.safetensors \
   --prompts-file prompts.json \
   --output-dir outputs/
@@ -222,7 +222,7 @@ See `packages/ltx-trainer/` for the preprocessing pipeline.
 ### 🏃 Run Training
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python packages/ltx-trainer/scripts/train.py \
+CUDA_VISIBLE_DEVICES=0 uv run python packages/ltx-trainer/scripts/train.py \
   configs/training_celebvhq.yaml
 ```
 
@@ -234,10 +234,85 @@ Both use the `audio_ref_only_ic` strategy with negative temporal positions, LoRA
 
 ## 📦 Pre-trained Checkpoints
 
+### LTX-2 (Base)
+
 | Checkpoint | Dataset | LoRA Rank | Training Steps | Download |
 |-----------|---------|-----------|----------------|----------|
 | ID-LoRA-CelebVHQ | CelebV-HQ | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-CelebVHQ) |
 | ID-LoRA-TalkVid | TalkVid | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/ID-LoRA-TalkVid) |
+
+### LTX-2.3
+
+| Checkpoint | Dataset | LoRA Rank | Training Steps | Download |
+|-----------|---------|-----------|----------------|----------|
+| ID-LoRA-CelebVHQ (LTX-2.3) | CelebV-HQ | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-CelebVHQ-3K) |
+| ID-LoRA-TalkVid (LTX-2.3) | TalkVid | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-TalkVid-3K) |
+
+## 🆕 LTX-2.3 Support
+
+ID-LoRA now supports **LTX-2.3** (22B parameters), the latest version of the LTX video generation model. LTX-2.3 brings improved text conditioning, better audio quality, and a new high-quality inference mode.
+
+### Installation
+
+The LTX-2.3 packages share the same Python module names (`ltx_core`, `ltx_pipelines`, `ltx_trainer`) as the base packages, so they **cannot** be installed side-by-side. To switch to LTX-2.3, edit `pyproject.toml` at the repo root:
+
+```toml
+[tool.uv.workspace]
+members = ["ID-LoRA-2.3/packages/*"]
+```
+
+Then re-sync:
+
+```bash
+uv sync
+```
+
+### Download LTX-2.3 Models
+
+```bash
+bash ID-LoRA-2.3/scripts/download_models.sh
+```
+
+This downloads the LTX-2.3 base model (~44 GB), text encoder (~6 GB), spatial upscaler (~700 MB), distilled LoRA (~900 MB), and pre-trained ID-LoRA checkpoints (~1.1 GB each).
+
+### Inference
+
+#### Two-Stage (Recommended)
+
+```bash
+uv run python ID-LoRA-2.3/scripts/inference_two_stage.py \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
+  --reference-audio reference_speaker.wav \
+  --first-frame first_frame.png \
+  --prompt "[VISUAL]: A person speaks in a sunlit park... [SPEECH]: Hello world... [SOUNDS]: ..." \
+  --output-dir outputs/two_stage \
+  --quantize
+```
+
+#### Two-Stage HQ (New -- Higher Fidelity)
+
+Uses the Res2s sampler with rescaling guidance. Fewer steps (15 vs 30) but higher fidelity output.
+
+```bash
+uv run python ID-LoRA-2.3/scripts/inference_two_stage_hq.py \
+  --lora-path models/id-lora-celebvhq-ltx2.3/lora_weights.safetensors \
+  --reference-audio reference_speaker.wav \
+  --first-frame first_frame.png \
+  --prompt "[VISUAL]: A person speaks in a sunlit park... [SPEECH]: Hello world... [SOUNDS]: ..." \
+  --output-dir outputs/two_stage_hq \
+  --quantize
+```
+
+### Training (LTX-2.3)
+
+Training uses the same `audio_ref_only_ic` strategy. Configs point to the LTX-2.3 checkpoint:
+
+```bash
+uv run python ID-LoRA-2.3/packages/ltx-trainer/scripts/train.py \
+  ID-LoRA-2.3/configs/training_celebvhq.yaml
+```
+
+See [`ID-LoRA-2.3/README.md`](ID-LoRA-2.3/README.md) for full details including dataset preparation and multi-GPU training.
 
 ## 🧪 Method
 
