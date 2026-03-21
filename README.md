@@ -6,6 +6,7 @@
   <a href="https://huggingface.co/AviadDahan"><img src="https://img.shields.io/badge/%F0%9F%A4%97-Models-yellow.svg" alt="HuggingFace Models"></a>
   <a href="https://huggingface.co/datasets/noakraicer/ID-LoRA-CelebVHQ"><img src="https://img.shields.io/badge/%F0%9F%A4%97-CelebVHQ_Dataset-orange.svg" alt="CelebV-HQ Dataset"></a>
   <a href="https://huggingface.co/datasets/noakraicer/ID-LoRA-TalkVid"><img src="https://img.shields.io/badge/%F0%9F%A4%97-TalkVid_Dataset-orange.svg" alt="TalkVid Dataset"></a>
+  <a href="https://github.com/ID-LoRA/ID-LoRA-LTX2.3-ComfyUI"><img src="https://img.shields.io/badge/ComfyUI-Custom_Node-green.svg" alt="ComfyUI"></a>
 </p>
 
 ---
@@ -14,10 +15,25 @@
 
 We now support **LTX-2.3** (22B parameters), the latest LTX video model. ID-LoRA 2.3 brings **improved text conditioning**, **better audio quality**, and a new **Two-Stage HQ** inference mode for higher fidelity output. Pre-trained checkpoints for CelebV-HQ and TalkVid are available on [HuggingFace](https://huggingface.co/AviadDahan). See [ID-LoRA-2.3/README.md](ID-LoRA-2.3/README.md) for setup and usage.
 
+We released a [ComfyUI custom node](https://github.com/ID-LoRA/ID-LoRA-LTX2.3-ComfyUI) for ID-LoRA with LTX-2.3 — enabling node-based workflows with full support for one-stage, two-stage, and two-stage HQ inference.
+
 ---
 
 <p align="center">
   <img src="assets/teaser.png" alt="ID-LoRA teaser" width="720">
+</p>
+
+
+<p align="center">
+  <b>🎬 ID-LoRA in action — identity-preserving talking video from a single image and short audio clip:</b>
+  Input voice:
+  [reference_voice.mp3](https://github.com/user-attachments/files/26158528/reference_voice.mp3)
+
+  https://github.com/user-attachments/assets/8e185190-5f78-48b9-ab71-fd54fde02594
+</p>
+
+<p align="center">
+  <video src="assets/demo.mp4" width="720" controls></video>
 </p>
 
 ## ⚡ TL;DR
@@ -55,7 +71,7 @@ Key features:
 - [x] Inference scripts (one-stage, two-stage)
 - [x] Training code
 - [x] LTX-2.3 support (22B model, two-stage HQ inference)
-- [ ] ComfyUI support
+- [x] ComfyUI support ([ID-LoRA-LTX2.3-ComfyUI](https://github.com/ID-LoRA/ID-LoRA-LTX2.3-ComfyUI))
 - [x] Training datasets (CelebV-HQ preprocessed, TalkVid preprocessed) -- HuggingFace Datasets
 - [ ] Evaluation datasets and benchmark splits (CelebV-HQ v3.2 eval, TalkVid eval) -- HuggingFace Datasets
 - [ ] Evaluation scripts
