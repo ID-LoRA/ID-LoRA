@@ -108,6 +108,15 @@ python ID-LoRA-2.3/scripts/inference_one_stage.py \
   --quantize
 ```
 
+### Audio–video bimodal CFG
+
+All inference scripts accept:
+
+- **`--av-bimodal-cfg` / `--no-av-bimodal-cfg`** — enable or disable audio–video bimodal classifier-free guidance in the denoising loop (default: enabled).
+- **`--av-bimodal-scale`** — guidance strength for that term (default: `3.0`, from `DEFAULT_AV_BIMODAL_SCALE` in `inference_two_stage_hq.py`).
+
+Run `--help` on any script for the full argument list.
+
 ### Batch Inference
 
 All scripts support a `--prompts-file` argument for batch processing. Pass a JSON file

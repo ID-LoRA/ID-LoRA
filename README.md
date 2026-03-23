@@ -193,6 +193,8 @@ uv run python scripts/inference_one_stage.py \
 | `--video-guidance-scale` | 3.0 | CFG scale for video |
 | `--audio-guidance-scale` | 7.0 | CFG scale for audio |
 | `--identity-guidance-scale` | 3.0 | Identity guidance strength |
+| `--av-bimodal-cfg` | on | Audio–video bimodal CFG (`--no-av-bimodal-cfg` to disable) |
+| `--av-bimodal-scale` | 3.0 | Bimodal CFG guidance strength |
 | `--seed` | 42 | Random seed |
 
 ### 📦 Batch Inference
@@ -367,7 +369,7 @@ uv run python ID-LoRA-2.3/packages/ltx-trainer/scripts/train.py \
   ID-LoRA-2.3/configs/training_celebvhq.yaml
 ```
 
-See [`ID-LoRA-2.3/README.md`](ID-LoRA-2.3/README.md) for full details including dataset preparation and multi-GPU training.
+See [`ID-LoRA-2.3/README.md`](ID-LoRA-2.3/README.md) for full details including dataset preparation and multi-GPU training. The 2.3 inference scripts share the same CLI flags as above, including `--av-bimodal-cfg` / `--no-av-bimodal-cfg` and `--av-bimodal-scale`.
 
 ## 🧪 Method
 

@@ -731,6 +731,10 @@ def parse_args() -> argparse.Namespace:
                         help="Audio CFG rescale (0 = standard CFG)")
     parser.add_argument("--identity-guidance-scale", type=float, default=DEFAULT_IDENTITY_GUIDANCE_SCALE)
     parser.add_argument("--stg-scale", type=float, default=0.0, help="STG scale (0 disables, HQ default=0)")
+    parser.add_argument("--av-bimodal-cfg", action=argparse.BooleanOptionalAction, default=True,
+                        help="Enable audio-video bimodal CFG in the denoising loop")
+    parser.add_argument("--av-bimodal-scale", type=float, default=DEFAULT_AV_BIMODAL_SCALE,
+                        help="Audio-video bimodal CFG guidance strength")
 
     parser.add_argument("--distilled-strength-s1", type=float, default=DISTILLED_STRENGTH_STAGE_1,
                         help="Distilled LoRA strength for stage 1")
@@ -773,6 +777,7 @@ def main() -> None:
     print(f"Steps:                  stage 1 = {args.num_inference_steps} (Res2s),  stage 2 = {s2_steps}")
     print(f"CFG:                    video={args.video_guidance_scale} (rescale={args.video_rescale}), audio={args.audio_guidance_scale} (rescale={args.audio_rescale})")
     print(f"Identity guidance:      scale={args.identity_guidance_scale}")
+    print(f"AV bimodal CFG:         enabled={args.av_bimodal_cfg}, scale={args.av_bimodal_scale}")
     print(f"Distilled LoRA:         s1={args.distilled_strength_s1}, s2={args.distilled_strength_s2}")
     print(f"Output:                 {output_dir}")
     print("=" * 80)
@@ -810,8 +815,8 @@ def main() -> None:
         stg_scale=args.stg_scale,
         identity_guidance=True,
         identity_guidance_scale=args.identity_guidance_scale,
-        av_bimodal_cfg=True,
-        av_bimodal_scale=DEFAULT_AV_BIMODAL_SCALE,
+        av_bimodal_cfg=args.av_bimodal_cfg,
+        av_bimodal_scale=args.av_bimodal_scale,
         video_rescale=args.video_rescale,
         audio_rescale=args.audio_rescale,
     )

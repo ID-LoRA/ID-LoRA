@@ -560,6 +560,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--audio-guidance-scale", type=float, default=DEFAULT_AUDIO_GUIDANCE_SCALE)
     parser.add_argument("--identity-guidance-scale", type=float, default=DEFAULT_IDENTITY_GUIDANCE_SCALE)
     parser.add_argument("--stg-scale", type=float, default=1.0, help="STG scale (0 disables)")
+    parser.add_argument("--av-bimodal-cfg", action=argparse.BooleanOptionalAction, default=True,
+                        help="Enable audio-video bimodal CFG in the denoising loop")
+    parser.add_argument("--av-bimodal-scale", type=float, default=3.0,
+                        help="Audio-video bimodal CFG guidance strength")
 
     parser.add_argument("--negative-prompt", default=DEFAULT_NEGATIVE_PROMPT)
     parser.add_argument("--auto-resolution", "--no-auto-resolution", dest="auto_resolution",
@@ -596,6 +600,7 @@ def main() -> None:
     print(f"Steps:                  {args.num_inference_steps}")
     print(f"CFG:                    video={args.video_guidance_scale}, audio={args.audio_guidance_scale}")
     print(f"Identity guidance:      scale={args.identity_guidance_scale}")
+    print(f"AV bimodal CFG:         enabled={args.av_bimodal_cfg}, scale={args.av_bimodal_scale}")
     print(f"Output:                 {output_dir}")
     print("=" * 80)
 
@@ -627,8 +632,8 @@ def main() -> None:
         stg_scale=args.stg_scale,
         identity_guidance=True,
         identity_guidance_scale=args.identity_guidance_scale,
-        av_bimodal_cfg=True,
-        av_bimodal_scale=3.0,
+        av_bimodal_cfg=args.av_bimodal_cfg,
+        av_bimodal_scale=args.av_bimodal_scale,
     )
 
     print("\nPre-computing text embeddings...")
