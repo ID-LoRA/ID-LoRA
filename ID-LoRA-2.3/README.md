@@ -11,7 +11,6 @@ audio quality.
 | Model size | 19B parameters | 22B parameters |
 | Text conditioning | Single feature extractor | Separate video + audio feature extractors with per-token RMSNorm |
 | Prompt AdaLN | Not used | Active (modulates cross-attention to text) |
-| Vocoder | HiFi-GAN | BigVGAN v2 + bandwidth extension |
 | Inference scripts | one-stage, two-stage | one-stage, two-stage, **two-stage HQ** (new) |
 
 Version detection is automatic — the packages read the checkpoint config and select the
@@ -54,9 +53,9 @@ This downloads:
 | File | Size | Purpose |
 |------|------|---------|
 | `ltx-2.3-22b-dev.safetensors` | ~44 GB | Base LTX-2.3 model |
-| `gemma-3-12b-it-qat-q4_0-unquantized` | ~6 GB | Text encoder |
-| `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | ~700 MB | Spatial upscaler (two-stage) |
-| `ltx-2.3-22b-distilled-lora-384.safetensors` | ~900 MB | Distilled LoRA (two-stage) |
+| `gemma-3-12b-it-qat-q4_0-unquantized` | ~23 GB | Text encoder |
+| `ltx-2.3-spatial-upscaler-x2-1.1.safetensors` | ~900 MB | Spatial upscaler (two-stage) |
+| `ltx-2.3-22b-distilled-lora-384.safetensors` | ~7.6 GB | Distilled LoRA (two-stage) |
 | `id-lora-celebvhq-ltx2.3/lora_weights.safetensors` | ~1.1 GB | ID-LoRA CelebVHQ checkpoint (LTX-2.3) |
 | `id-lora-talkvid-ltx2.3/lora_weights.safetensors` | ~1.1 GB | ID-LoRA TalkVid checkpoint (LTX-2.3) |
 
