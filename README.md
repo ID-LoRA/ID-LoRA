@@ -300,8 +300,8 @@ Both use the `audio_ref_only_ic` strategy with negative temporal positions, LoRA
 
 | Checkpoint | Dataset | LoRA Rank | Training Steps | Download |
 |-----------|---------|-----------|----------------|----------|
-| ID-LoRA-CelebVHQ (LTX-2.3) | CelebV-HQ | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-CelebVHQ-3K) |
-| ID-LoRA-TalkVid (LTX-2.3) | TalkVid | 128 | 6,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-TalkVid-3K) |
+| ID-LoRA-CelebVHQ (LTX-2.3) | CelebV-HQ | 128 | 3,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-CelebVHQ-3K) |
+| ID-LoRA-TalkVid (LTX-2.3) | TalkVid | 128 | 3,000 | [🤗 HuggingFace](https://huggingface.co/AviadDahan/LTX-2.3-ID-LoRA-TalkVid-3K) |
 
 ## 🆕 LTX-2.3 Support
 
